@@ -54,10 +54,10 @@ export function FoliageStatusOverview({ spots }: FoliageStatusOverviewProps) {
     return {
       path: google.maps.SymbolPath.CIRCLE,
       fillColor: color,
-      fillOpacity: 0.9,
+      fillOpacity: 0.8,
       strokeColor: "#ffffff",
-      strokeWeight: 3,
-      scale: 12, // Increased size for better visibility
+      strokeWeight: 4,
+      scale: 24, // Increased size for better visibility
     };
   };
 
@@ -517,7 +517,17 @@ export function FoliageStatusOverview({ spots }: FoliageStatusOverviewProps) {
         position: { lat: spot.location.lat, lng: spot.location.lng },
         map: map,
         title: spot.name,
-        icon: createMarkerIcon(spot.foliageStatus),
+        icon: {
+          ...createMarkerIcon(spot.foliageStatus),
+          labelOrigin: new google.maps.Point(0, 0),
+        },
+        label: {
+          text: spot.name,
+          color: "#1f2937", // Dark gray for high visibility
+          fontSize: "14px",
+          fontWeight: "600",
+          className: "map-label",
+        },
       });
 
       marker.addListener("click", () => {
