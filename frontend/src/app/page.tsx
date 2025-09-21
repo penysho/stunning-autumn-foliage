@@ -12,16 +12,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { fetchFoliageSpots } from "@/lib/api";
 import { mockFoliageSpots } from "@/lib/autumn-data";
 import { FoliageSpot } from "@/types/autumn";
-import { Clock, ExternalLink, MapPin, Phone } from "lucide-react";
-import { useState } from "react";
+import {
+  AlertCircle,
+  Clock,
+  ExternalLink,
+  MapPin,
+  Phone,
+  RefreshCw,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 /**
  * Home page component for Hachimantai autumn foliage information
  */
 export default function Home() {
-  const allSpots = mockFoliageSpots;
+  // Data state management
+  const [allSpots, setAllSpots] = useState<FoliageSpot[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [useFallback, setUseFallback] = useState(false);
 
   // Modal state management
   const [selectedSpot, setSelectedSpot] = useState<FoliageSpot | null>(null);
@@ -35,6 +47,41 @@ export default function Home() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedSpot(null);
+  };
+
+  /**
+   * Fetch foliage spots data from API
+   */
+  const loadFoliageSpots = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const spots = await fetchFoliageSpots();
+      setAllSpots(spots);
+      setUseFallback(false);
+    } catch (err) {
+      console.error("Failed to load foliage spots:", err);
+      setError(err instanceof Error ? err.message : "Unknown error occurred");
+      // Use fallback data if API fails
+      setAllSpots(mockFoliageSpots);
+      setUseFallback(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * Load data on component mount
+   */
+  useEffect(() => {
+    loadFoliageSpots();
+  }, []);
+
+  /**
+   * Retry loading data
+   */
+  const handleRetry = () => {
+    loadFoliageSpots();
   };
 
   return (
@@ -62,39 +109,88 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Full-Width Google Map Section - Priority Display */}
-        <section id="map" className="bg-white border-b-2 border-slate-100">
-          <div className="w-full px-2 sm:px-4 lg:px-6 py-4">
-            <div className="container mx-auto max-w-7xl">
-              <FoliageStatusOverview spots={allSpots} />
+        {/* Loading State */}
+        {isLoading && (
+          <section className="bg-white border-b-2 border-slate-100">
+            <div className="w-full px-2 sm:px-4 lg:px-6 py-8">
+              <div className="container mx-auto max-w-7xl text-center">
+                <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-slate-600" />
+                <p className="text-slate-600">紅葉情報を読み込んでいます...</p>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
+
+        {/* Error State */}
+        {error && !isLoading && (
+          <section className="bg-red-50 border-b-2 border-red-100">
+            <div className="w-full px-2 sm:px-4 lg:px-6 py-6">
+              <div className="container mx-auto max-w-7xl text-center">
+                <AlertCircle className="w-8 h-8 mx-auto mb-4 text-red-600" />
+                <h3 className="text-lg font-semibold text-red-800 mb-2">
+                  データの読み込みに失敗しました
+                </h3>
+                <p className="text-red-700 mb-4">
+                  {useFallback ? "サンプルデータを表示しています。" : error}
+                </p>
+                <Button
+                  onClick={handleRetry}
+                  variant="outline"
+                  className="border-red-300 text-red-700 hover:bg-red-50"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  再試行
+                </Button>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Full-Width Google Map Section - Priority Display */}
+        {!isLoading && (
+          <section id="map" className="bg-white border-b-2 border-slate-100">
+            <div className="w-full px-2 sm:px-4 lg:px-6 py-4">
+              <div className="container mx-auto max-w-7xl">
+                <FoliageStatusOverview spots={allSpots} />
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Detailed Spots Information */}
-        <section id="spots" className="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
-          <div className="container mx-auto max-w-6xl">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-3">
-                各スポット詳細情報
-              </h2>
-              <p className="text-base text-slate-600 max-w-2xl mx-auto">
-                八幡平市内全{allSpots.length}箇所の紅葉スポット
-              </p>
-            </div>
+        {!isLoading && (
+          <section
+            id="spots"
+            className="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50"
+          >
+            <div className="container mx-auto max-w-6xl">
+              <div className="text-center mb-8">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-3">
+                  各スポット詳細情報
+                  {useFallback && (
+                    <span className="ml-2 text-sm font-normal text-orange-600">
+                      (サンプルデータ)
+                    </span>
+                  )}
+                </h2>
+                <p className="text-base text-slate-600 max-w-2xl mx-auto">
+                  八幡平市内全{allSpots.length}箇所の紅葉スポット
+                </p>
+              </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {allSpots.map((spot) => (
-                <FoliageCard
-                  key={spot.id}
-                  spot={spot}
-                  className="h-full"
-                  onClick={handleSpotClick}
-                />
-              ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {allSpots.map((spot) => (
+                  <FoliageCard
+                    key={spot.id}
+                    spot={spot}
+                    className="h-full"
+                    onClick={handleSpotClick}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* About Section */}
         <section id="about" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-100">

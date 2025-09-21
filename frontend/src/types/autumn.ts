@@ -8,15 +8,24 @@ export type FoliageStatus =
   | "colored" // 色づき
   | "peak" // 見頃
   | "fading" // 色あせ始め
-  | "finished";
+  | "finished"; // 終了
+
+export interface ImageSizes {
+  thumbnail?: string;
+  small?: string;
+  medium?: string;
+  large?: string;
+  original?: string;
+}
 
 export interface FoliageSpot {
   id: string;
   name: string;
   nameEn?: string;
   description?: string;
-  status: FoliageStatus;
-  imageUrl?: string;
+  foliageStatus: FoliageStatus;
+  imageUrl?: string; // Main image URL (usually medium or original)
+  imageSizes?: ImageSizes; // Multiple image sizes for responsive design
   location?: {
     lat: number;
     lng: number;
@@ -26,7 +35,7 @@ export interface FoliageSpot {
 }
 
 export interface FoliageStatusInfo {
-  status: FoliageStatus;
+  foliageStatus: FoliageStatus;
   label: string;
   color: string;
   description: string;

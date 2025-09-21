@@ -21,7 +21,7 @@ export function FoliageCard({
   featured = false,
   onClick,
 }: FoliageCardProps) {
-  const statusInfo = getFoliageStatusInfo(spot.status);
+  const statusInfo = getFoliageStatusInfo(spot.foliageStatus);
 
   const handleClick = () => {
     if (onClick) {

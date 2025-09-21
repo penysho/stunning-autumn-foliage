@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
         port: "",
         // pathname: "/photo-*",
       },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "1337",
+      },
     ],
   },
 };

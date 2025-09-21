@@ -1,0 +1,50 @@
+{
+  "kind": "collectionType",
+  "collectionName": "foliage_spots",
+  "info": {
+    "singularName": "foliage-spot",
+    "pluralName": "foliage-spots",
+    "displayName": "Foliage Spot",
+    "description": "Hachimantai autumn foliage spots with status tracking"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "nameEn": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "foliageStatus": {
+      "type": "enumeration",
+      "enum": ["green", "beginning", "colored", "peak", "fading", "finished"],
+      "default": "green",
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "latitude": {
+      "type": "decimal",
+      "required": false
+    },
+    "longitude": {
+      "type": "decimal",
+      "required": false
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

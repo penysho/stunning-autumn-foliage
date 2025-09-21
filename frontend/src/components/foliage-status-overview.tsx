@@ -21,9 +21,9 @@ export function FoliageStatusOverview({ spots }: FoliageStatusOverviewProps) {
   );
   const [legendDiv, setLegendDiv] = useState<HTMLDivElement | null>(null);
 
-  // Calculate statistics for each status
+  // Calculate statistics for each foliage status
   const statusCounts = Object.keys(foliageStatusInfo).reduce((acc, status) => {
-    acc[status] = spots.filter((spot) => spot.status === status).length;
+    acc[status] = spots.filter((spot) => spot.foliageStatus === status).length;
     return acc;
   }, {} as Record<string, number>);
 
@@ -235,7 +235,7 @@ export function FoliageStatusOverview({ spots }: FoliageStatusOverviewProps) {
    * Create enhanced info window content for a spot
    */
   const createInfoWindowContent = (spot: FoliageSpot): string => {
-    const statusInfo = foliageStatusInfo[spot.status];
+    const statusInfo = foliageStatusInfo[spot.foliageStatus];
     const colorMap: Record<string, string> = {
       "bg-green-500": "#10b981",
       "bg-yellow-400": "#fbbf24",
@@ -517,7 +517,7 @@ export function FoliageStatusOverview({ spots }: FoliageStatusOverviewProps) {
         position: { lat: spot.location.lat, lng: spot.location.lng },
         map: map,
         title: spot.name,
-        icon: createMarkerIcon(spot.status),
+        icon: createMarkerIcon(spot.foliageStatus),
       });
 
       marker.addListener("click", () => {

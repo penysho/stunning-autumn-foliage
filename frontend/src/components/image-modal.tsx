@@ -20,7 +20,7 @@ interface ImageModalProps {
 export function ImageModal({ spot, isOpen, onClose }: ImageModalProps) {
   if (!spot) return null;
 
-  const statusInfo = getFoliageStatusInfo(spot.status);
+  const statusInfo = getFoliageStatusInfo(spot.foliageStatus);
 
   return (
     <Modal
