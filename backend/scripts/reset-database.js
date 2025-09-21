@@ -34,12 +34,6 @@ async function resetDatabase() {
     }
 
     console.log("✅ Database reset completed!");
-    console.log("");
-    console.log("📋 Next steps:");
-    console.log("1. Start Strapi: npm run develop");
-    console.log("2. Create admin user in browser");
-    console.log("3. Run: npm run setup:permissions");
-    console.log("4. Run: npm run seed:foliage-spots");
   } catch (error) {
     console.error("❌ Error resetting database:", error);
     throw error;
