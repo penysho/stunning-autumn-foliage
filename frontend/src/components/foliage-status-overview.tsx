@@ -62,92 +62,168 @@ export function FoliageStatusOverview({ spots }: FoliageStatusOverviewProps) {
   };
 
   /**
-   * Create floating legend overlay on the map
+   * Check if the current viewport is mobile sized
+   */
+  const isMobile = (): boolean => {
+    return window.innerWidth < 768; // md breakpoint
+  };
+
+  /**
+   * Create floating legend overlay on the map with responsive positioning
    */
   const createMapLegend = (map: google.maps.Map): HTMLDivElement => {
     const div = document.createElement("div");
-    map.controls[google.maps.ControlPosition.RIGHT_TOP].push(div);
+    // Use different positions based on screen size
+    const position = isMobile()
+      ? google.maps.ControlPosition.BOTTOM_CENTER
+      : google.maps.ControlPosition.RIGHT_TOP;
+    map.controls[position].push(div);
     return div;
   };
 
   /**
-   * Update legend content with current foliage status data
+   * Update legend content with current foliage status data - responsive design
    */
   const updateLegendContent = (div: HTMLDivElement): void => {
+    const mobile = isMobile();
+
     div.innerHTML = `
       <div style="
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
-        border-radius: 12px;
-        padding: 16px;
-        margin: 10px;
+        border-radius: ${mobile ? "8px" : "12px"};
+        padding: ${mobile ? "8px 12px" : "16px"};
+        margin: ${mobile ? "5px" : "10px"};
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.2);
         font-family: system-ui, -apple-system, sans-serif;
-        min-width: 200px;
+        ${mobile ? "max-width: 90vw; width: auto;" : "min-width: 200px;"}
+        ${mobile ? "overflow-x: auto;" : ""}
       ">
-        <h3 style="
-          margin: 0 0 12px 0;
-          font-size: 14px;
-          font-weight: 600;
-          color: #1f2937;
-          text-align: center;
-        ">紅葉状況</h3>
-        ${Object.entries(foliageStatusInfo)
-          .map(
-            ([status, info]) => `
+        ${
+          mobile
+            ? `
+          <!-- Mobile: Horizontal scrollable layout -->
           <div style="
             display: flex;
+            gap: 12px;
             align-items: center;
-            margin-bottom: 8px;
-            font-size: 12px;
+            white-space: nowrap;
+            padding-bottom: 4px;
           ">
             <div style="
-              width: 16px;
-              height: 16px;
-              border-radius: 50%;
-              background-color: ${(() => {
-                const colorMap: Record<string, string> = {
-                  "bg-green-500": "#10b981",
-                  "bg-yellow-400": "#fbbf24",
-                  "bg-orange-500": "#f97316",
-                  "bg-red-500": "#ef4444",
-                  "bg-amber-600": "#d97706",
-                  "bg-gray-500": "#6b7280",
-                };
-                return colorMap[info.color] || "#6b7280";
-              })()};
-              border: 2px solid white;
-              margin-right: 8px;
+              font-size: 12px;
+              font-weight: 600;
+              color: #1f2937;
               flex-shrink: 0;
-            "></div>
-            <div style="flex: 1;">
-              <div style="
-                font-weight: 500;
-                color: #374151;
-                line-height: 1.2;
-              ">${info.emoji} ${info.label}</div>
-              <div style="
-                color: #6b7280;
-                font-size: 10px;
-                margin-top: 2px;
-              ">${statusCounts[status]}箇所</div>
-            </div>
+            ">状況:</div>
+            ${Object.entries(foliageStatusInfo)
+              .map(
+                ([status, info]) => `
+                <div style="
+                  display: flex;
+                  align-items: center;
+                  gap: 4px;
+                  flex-shrink: 0;
+                  font-size: 11px;
+                ">
+                  <div style="
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                    background-color: ${(() => {
+                      const colorMap: Record<string, string> = {
+                        "bg-green-500": "#10b981",
+                        "bg-yellow-400": "#fbbf24",
+                        "bg-orange-500": "#f97316",
+                        "bg-red-500": "#ef4444",
+                        "bg-amber-600": "#d97706",
+                        "bg-gray-500": "#6b7280",
+                      };
+                      return colorMap[info.color] || "#6b7280";
+                    })()};
+                    border: 1px solid white;
+                    flex-shrink: 0;
+                  "></div>
+                  <span style="
+                    color: #374151;
+                    font-weight: 500;
+                  ">${info.emoji}</span>
+                  <span style="
+                    color: #6b7280;
+                  ">${statusCounts[status]}</span>
+                </div>
+              `
+              )
+              .join("")}
           </div>
         `
-          )
-          .join("")}
-        <div style="
-          margin-top: 12px;
-          padding-top: 8px;
-          border-top: 1px solid #e5e7eb;
-          font-size: 10px;
-          color: #6b7280;
-          text-align: center;
-        ">
-          最終更新: ${lastUpdate}<br>
-          全${spots.length}箇所
-        </div>
+            : `
+          <!-- Desktop: Vertical layout -->
+          <h3 style="
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            text-align: center;
+          ">紅葉状況</h3>
+          ${Object.entries(foliageStatusInfo)
+            .map(
+              ([status, info]) => `
+            <div style="
+              display: flex;
+              align-items: center;
+              margin-bottom: 8px;
+              font-size: 12px;
+            ">
+              <div style="
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background-color: ${(() => {
+                  const colorMap: Record<string, string> = {
+                    "bg-green-500": "#10b981",
+                    "bg-yellow-400": "#fbbf24",
+                    "bg-orange-500": "#f97316",
+                    "bg-red-500": "#ef4444",
+                    "bg-amber-600": "#d97706",
+                    "bg-gray-500": "#6b7280",
+                  };
+                  return colorMap[info.color] || "#6b7280";
+                })()};
+                border: 2px solid white;
+                margin-right: 8px;
+                flex-shrink: 0;
+              "></div>
+              <div style="flex: 1;">
+                <div style="
+                  font-weight: 500;
+                  color: #374151;
+                  line-height: 1.2;
+                ">${info.emoji} ${info.label}</div>
+                <div style="
+                  color: #6b7280;
+                  font-size: 10px;
+                  margin-top: 2px;
+                ">${statusCounts[status]}箇所</div>
+              </div>
+            </div>
+          `
+            )
+            .join("")}
+          <div style="
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 10px;
+            color: #6b7280;
+            text-align: center;
+          ">
+            最終更新: ${lastUpdate}<br>
+            全${spots.length}箇所
+          </div>
+        `
+        }
       </div>
     `;
   };
@@ -379,6 +455,30 @@ export function FoliageStatusOverview({ spots }: FoliageStatusOverviewProps) {
         setMap(mapInstance);
         setInfoWindow(infoWindowInstance);
         setLegendDiv(legend);
+
+        // Add resize listener to handle responsive legend positioning
+        const handleResize = () => {
+          if (legend && legend.parentNode) {
+            // Remove legend from current position
+            legend.parentNode.removeChild(legend);
+
+            // Re-add legend with new position
+            const newPosition = isMobile()
+              ? google.maps.ControlPosition.BOTTOM_CENTER
+              : google.maps.ControlPosition.RIGHT_TOP;
+            mapInstance.controls[newPosition].push(legend);
+
+            // Update legend content for new screen size
+            updateLegendContent(legend);
+          }
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        // Cleanup resize listener
+        return () => {
+          window.removeEventListener("resize", handleResize);
+        };
       } catch (error) {
         console.error("Failed to load Google Maps:", error);
       }
@@ -434,11 +534,11 @@ export function FoliageStatusOverview({ spots }: FoliageStatusOverviewProps) {
 
   return (
     <div className="w-full">
-      {/* Full-screen Google Map with floating legend */}
+      {/* Responsive Google Map with optimized height for mobile */}
       <div
         ref={mapRef}
-        className="w-full h-[600px] rounded-xl border border-slate-200 shadow-lg"
-        style={{ minHeight: "600px" }}
+        className="w-full h-[60vh] sm:h-[70vh] md:h-[75vh] lg:h-[80vh] xl:h-[85vh] min-h-[400px] max-h-[900px] rounded-lg sm:rounded-xl border border-slate-200 shadow-lg"
+        style={{ minHeight: "400px" }}
       />
     </div>
   );

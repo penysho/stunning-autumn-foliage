@@ -1,5 +1,8 @@
+"use client";
+
 import { FoliageCard } from "@/components/foliage-card";
 import { FoliageStatusOverview } from "@/components/foliage-status-overview";
+import { ImageModal } from "@/components/image-modal";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,23 +12,38 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getFeaturedSpots, mockFoliageSpots } from "@/lib/autumn-data";
+import { mockFoliageSpots } from "@/lib/autumn-data";
+import { FoliageSpot } from "@/types/autumn";
 import { Clock, ExternalLink, MapPin, Phone } from "lucide-react";
+import { useState } from "react";
 
 /**
  * Home page component for Hachimantai autumn foliage information
  */
 export default function Home() {
-  const featuredSpots = getFeaturedSpots();
   const allSpots = mockFoliageSpots;
+
+  // Modal state management
+  const [selectedSpot, setSelectedSpot] = useState<FoliageSpot | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleSpotClick = (spot: FoliageSpot) => {
+    setSelectedSpot(spot);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedSpot(null);
+  };
 
   return (
     <div className="min-h-screen bg-white">
       <SiteHeader />
 
       <main className="w-full">
-        {/* Compact Header Section */}
-        <section className="relative bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 py-12">
+        {/* Minimal Compact Header */}
+        <section className="relative bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 py-6">
           <div className="absolute inset-0 opacity-20">
             <div
               className="w-full h-full bg-cover bg-center bg-no-repeat"
@@ -35,37 +53,44 @@ export default function Home() {
             />
           </div>
           <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
               八幡平の紅葉状況
             </h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
-              岩手県八幡平市の素晴らしい紅葉スポットの最新情報
+            <p className="text-sm sm:text-base text-white/90">
+              岩手県八幡平市の最新紅葉情報をマップで確認
             </p>
           </div>
         </section>
 
-        {/* All Spots Section */}
-        <section id="spots" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        {/* Full-Width Google Map Section - Priority Display */}
+        <section id="map" className="bg-white border-b-2 border-slate-100">
+          <div className="w-full px-2 sm:px-4 lg:px-6 py-4">
+            <div className="container mx-auto max-w-7xl">
+              <FoliageStatusOverview spots={allSpots} />
+            </div>
+          </div>
+        </section>
+
+        {/* Detailed Spots Information */}
+        <section id="spots" className="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50">
           <div className="container mx-auto max-w-6xl">
-            <div className="text-center">
-              <h2 className="text-4xl font-bold text-slate-800 mb-6">
-                最新情報
+            <div className="text-center mb-8">
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-3">
+                各スポット詳細情報
               </h2>
-              <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                八幡平市内の全ての紅葉スポットの最新情報
+              <p className="text-base text-slate-600 max-w-2xl mx-auto">
+                八幡平市内全{allSpots.length}箇所の紅葉スポット
               </p>
             </div>
 
-            {/* Primary Status Overview Section */}
-            <div className="py-8 px-4 sm:px-6 lg:px-8 bg-white">
-              <div className="container mx-auto max-w-6xl">
-                <FoliageStatusOverview spots={allSpots} />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {allSpots.map((spot) => (
-                <FoliageCard key={spot.id} spot={spot} className="h-full" />
+                <FoliageCard
+                  key={spot.id}
+                  spot={spot}
+                  className="h-full"
+                  onClick={handleSpotClick}
+                />
               ))}
             </div>
           </div>
@@ -98,7 +123,7 @@ export default function Home() {
                   <div className="space-y-4 text-sm">
                     <div className="flex items-start gap-3">
                       <span className="font-semibold text-slate-700">
-                        🚗 車でお越しの場合:
+                        車でお越しの場合:
                       </span>
                       <span className="text-slate-600">
                         東北自動車道 松尾八幡平ICから約15分
@@ -106,7 +131,7 @@ export default function Home() {
                     </div>
                     <div className="flex items-start gap-3">
                       <span className="font-semibold text-slate-700">
-                        🚌 バスでお越しの場合:
+                        バスでお越しの場合:
                       </span>
                       <span className="text-slate-600">
                         盛岡駅から岩手県北バス利用
@@ -114,7 +139,7 @@ export default function Home() {
                     </div>
                     <div className="flex items-start gap-3">
                       <span className="font-semibold text-slate-700">
-                        🚄 電車でお越しの場合:
+                        電車でお越しの場合:
                       </span>
                       <span className="text-slate-600">
                         JR花輪線 大更駅下車
@@ -138,19 +163,19 @@ export default function Home() {
                   <div className="space-y-4 text-sm">
                     <div className="flex items-start gap-3">
                       <span className="font-semibold text-slate-700">
-                        🏔️ 山頂付近:
+                        山頂付近:
                       </span>
                       <span className="text-slate-600">9月下旬〜10月上旬</span>
                     </div>
                     <div className="flex items-start gap-3">
                       <span className="font-semibold text-slate-700">
-                        🌲 中腹エリア:
+                        中腹エリア:
                       </span>
                       <span className="text-slate-600">10月上旬〜10月中旬</span>
                     </div>
                     <div className="flex items-start gap-3">
                       <span className="font-semibold text-slate-700">
-                        🏞️ 麓エリア:
+                        麓エリア:
                       </span>
                       <span className="text-slate-600">10月中旬〜10月下旬</span>
                     </div>
@@ -162,10 +187,18 @@ export default function Home() {
             <div className="mt-12 text-center">
               <Button
                 variant="outline"
-                className="border-slate-300 text-slate-700 hover:bg-slate-50 px-8 py-3"
+                className="border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-800 px-8 py-3"
+                asChild
               >
-                <ExternalLink className="w-5 h-5 mr-3" />
-                八幡平市公式サイト
+                <a
+                  href="https://www.hachimantai.or.jp/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center text-slate-700 hover:text-slate-800 no-underline"
+                >
+                  <ExternalLink className="w-5 h-5 mr-3" />
+                  八幡平市観光協会公式サイト
+                </a>
               </Button>
             </div>
           </div>
@@ -181,7 +214,7 @@ export default function Home() {
                 八幡平紅葉情報
               </h3>
               <p className="text-slate-300 leading-relaxed">
-                岩手県八幡平市の美しい紅葉スポットの最新情報をお届けするサイトです。
+                豊かな自然の大パノラマ、岩手山・八幡平・安比高原・七時雨の美しい紅葉スポットの最新情報をお届けするサイトです。
               </p>
             </div>
 
@@ -192,9 +225,14 @@ export default function Home() {
               <div className="space-y-3 text-slate-300">
                 <div className="flex items-center gap-3">
                   <Phone className="w-5 h-5" />
-                  <span>八幡平市観光協会</span>
+                  <span>一般社団法人 八幡平市観光協会</span>
                 </div>
-                <div className="pl-8">TEL: 0195-78-3500</div>
+                <div className="pl-8">
+                  <div>TEL: 0195-78-3500</div>
+                  <div className="mt-1">
+                    〒028-7303 岩手県八幡平市柏台一丁目28番地
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -208,12 +246,15 @@ export default function Home() {
               </div>
             </div>
           </div>
-
-          <div className="mt-12 pt-8 border-t border-slate-700 text-center text-slate-400">
-            <p>&copy; 2025 八幡平市観光協会. All rights reserved.</p>
-          </div>
         </div>
       </footer>
+
+      {/* Image Modal */}
+      <ImageModal
+        spot={selectedSpot}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 }

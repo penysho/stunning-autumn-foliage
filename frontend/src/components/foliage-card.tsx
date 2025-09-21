@@ -9,6 +9,7 @@ interface FoliageCardProps {
   spot: FoliageSpot;
   className?: string;
   featured?: boolean;
+  onClick?: (spot: FoliageSpot) => void;
 }
 
 /**
@@ -18,12 +19,20 @@ export function FoliageCard({
   spot,
   className = "",
   featured = false,
+  onClick,
 }: FoliageCardProps) {
   const statusInfo = getFoliageStatusInfo(spot.status);
 
+  const handleClick = () => {
+    if (onClick) {
+      onClick(spot);
+    }
+  };
+
   return (
     <Card
-      className={`overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] bg-white border-0 shadow-lg ${className}`}
+      className={`overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] bg-white border-0 shadow-lg cursor-pointer ${className}`}
+      onClick={handleClick}
     >
       {spot.imageUrl && (
         <div className="relative h-64 overflow-hidden">
