@@ -97,7 +97,7 @@ export function FoliageStatusOverview({ spots }: FoliageStatusOverviewProps) {
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.2);
         font-family: system-ui, -apple-system, sans-serif;
-        ${mobile ? "max-width: 90vw; width: auto;" : "min-width: 200px;"}
+        ${mobile ? "max-width: 90vw; width: auto;" : "min-width: 240px;"}
         ${mobile ? "overflow-x: auto;" : ""}
       ">
         ${
@@ -159,70 +159,73 @@ export function FoliageStatusOverview({ spots }: FoliageStatusOverviewProps) {
           </div>
         `
             : `
-          <!-- Desktop: Vertical layout -->
-          <h3 style="
-            margin: 0 0 12px 0;
-            font-size: 14px;
-            font-weight: 600;
-            color: #1f2937;
-            text-align: center;
-          ">紅葉状況</h3>
-          ${Object.entries(foliageStatusInfo)
-            .map(
-              ([status, info]) => `
-            <div style="
-              display: flex;
-              align-items: center;
-              margin-bottom: 8px;
-              font-size: 12px;
-            ">
+            <!-- Desktop: Vertical layout with larger fonts -->
+            <h3 style="
+              margin: 0 0 16px 0;
+              font-size: 18px;
+              font-weight: 600;
+              color: #1f2937;
+              text-align: center;
+            ">紅葉状況</h3>
+            ${Object.entries(foliageStatusInfo)
+              .map(
+                ([status, info]) => `
               <div style="
-                width: 16px;
-                height: 16px;
-                border-radius: 50%;
-                background-color: ${(() => {
-                  const colorMap: Record<string, string> = {
-                    "bg-green-500": "#10b981",
-                    "bg-yellow-400": "#fbbf24",
-                    "bg-orange-500": "#f97316",
-                    "bg-red-500": "#ef4444",
-                    "bg-amber-600": "#d97706",
-                    "bg-gray-500": "#6b7280",
-                  };
-                  return colorMap[info.color] || "#6b7280";
-                })()};
-                border: 2px solid white;
-                margin-right: 8px;
-                flex-shrink: 0;
-              "></div>
-              <div style="flex: 1;">
+                display: flex;
+                align-items: center;
+                margin-bottom: 12px;
+                font-size: 15px;
+              ">
                 <div style="
-                  font-weight: 500;
-                  color: #374151;
-                  line-height: 1.2;
-                ">${info.emoji} ${info.label}</div>
-                <div style="
-                  color: #6b7280;
-                  font-size: 10px;
-                  margin-top: 2px;
-                ">${statusCounts[status]}箇所</div>
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 50%;
+                  background-color: ${(() => {
+                    const colorMap: Record<string, string> = {
+                      "bg-green-500": "#10b981",
+                      "bg-yellow-400": "#fbbf24",
+                      "bg-orange-500": "#f97316",
+                      "bg-red-500": "#ef4444",
+                      "bg-amber-600": "#d97706",
+                      "bg-gray-500": "#6b7280",
+                    };
+                    return colorMap[info.color] || "#6b7280";
+                  })()};
+                  border: 2px solid white;
+                  margin-right: 10px;
+                  flex-shrink: 0;
+                "></div>
+                <div style="flex: 1;">
+                  <div style="
+                    font-weight: 600;
+                    color: #374151;
+                    line-height: 1.3;
+                    font-size: 15px;
+                  ">${info.emoji} ${info.label}</div>
+                  <div style="
+                    color: #6b7280;
+                    font-size: 13px;
+                    margin-top: 3px;
+                    font-weight: 500;
+                  ">${statusCounts[status]}箇所</div>
+                </div>
               </div>
+            `
+              )
+              .join("")}
+            <div style="
+              margin-top: 16px;
+              padding-top: 12px;
+              border-top: 1px solid #e5e7eb;
+              font-size: 12px;
+              color: #6b7280;
+              text-align: center;
+              line-height: 1.4;
+            ">
+              最終更新: ${lastUpdate}<br>
+              全${spots.length}箇所
             </div>
-          `
-            )
-            .join("")}
-          <div style="
-            margin-top: 12px;
-            padding-top: 8px;
-            border-top: 1px solid #e5e7eb;
-            font-size: 10px;
-            color: #6b7280;
-            text-align: center;
-          ">
-            最終更新: ${lastUpdate}<br>
-            全${spots.length}箇所
-          </div>
-        `
+         `
         }
       </div>
     `;

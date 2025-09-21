@@ -54,18 +54,6 @@ export function ImageModal({ spot, isOpen, onClose }: ImageModalProps) {
               {statusInfo.emoji} {statusInfo.label}
             </Badge>
           </div>
-
-          {/* Featured Badge */}
-          {spot.featured && (
-            <div className="absolute top-6 right-20">
-              <Badge
-                variant="secondary"
-                className="bg-amber-400/95 text-slate-800 border-0 font-semibold px-4 py-2 text-base backdrop-blur-sm"
-              >
-                ⭐ おすすめ
-              </Badge>
-            </div>
-          )}
         </div>
 
         {/* Information Panel */}
