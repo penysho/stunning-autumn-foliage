@@ -57,7 +57,7 @@ export function FoliageStatusOverview({ spots }: FoliageStatusOverviewProps) {
       fillOpacity: 0.8,
       strokeColor: "#ffffff",
       strokeWeight: 4,
-      scale: 24, // Increased size for better visibility
+      scale: 20, // Increased size for better visibility
     };
   };
 

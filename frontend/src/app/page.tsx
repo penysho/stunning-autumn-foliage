@@ -13,7 +13,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { fetchFoliageSpots } from "@/lib/api";
-import { mockFoliageSpots } from "@/lib/autumn-data";
 import { FoliageSpot } from "@/types/autumn";
 import {
   AlertCircle,
@@ -33,7 +32,6 @@ export default function Home() {
   const [allSpots, setAllSpots] = useState<FoliageSpot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [useFallback, setUseFallback] = useState(false);
 
   // Modal state management
   const [selectedSpot, setSelectedSpot] = useState<FoliageSpot | null>(null);
@@ -58,13 +56,10 @@ export default function Home() {
       setError(null);
       const spots = await fetchFoliageSpots();
       setAllSpots(spots);
-      setUseFallback(false);
     } catch (err) {
       console.error("Failed to load foliage spots:", err);
       setError(err instanceof Error ? err.message : "Unknown error occurred");
-      // Use fallback data if API fails
-      setAllSpots(mockFoliageSpots);
-      setUseFallback(true);
+      setAllSpots([]);
     } finally {
       setIsLoading(false);
     }
@@ -130,9 +125,7 @@ export default function Home() {
                 <h3 className="text-lg font-semibold text-red-800 mb-2">
                   データの読み込みに失敗しました
                 </h3>
-                <p className="text-red-700 mb-4">
-                  {useFallback ? "サンプルデータを表示しています。" : error}
-                </p>
+                <p className="text-red-700 mb-4">{error}</p>
                 <Button
                   onClick={handleRetry}
                   variant="outline"
@@ -167,27 +160,36 @@ export default function Home() {
               <div className="text-center mb-8">
                 <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-3">
                   各スポット詳細情報
-                  {useFallback && (
-                    <span className="ml-2 text-sm font-normal text-orange-600">
-                      (サンプルデータ)
-                    </span>
-                  )}
                 </h2>
                 <p className="text-base text-slate-600 max-w-2xl mx-auto">
                   八幡平市内全{allSpots.length}箇所の紅葉スポット
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {allSpots.map((spot) => (
-                  <FoliageCard
-                    key={spot.id}
-                    spot={spot}
-                    className="h-full"
-                    onClick={handleSpotClick}
-                  />
-                ))}
-              </div>
+              {allSpots.length === 0 && !error ? (
+                <div className="text-center py-12">
+                  <div className="text-slate-400 mb-4">
+                    <MapPin className="w-12 h-12 mx-auto mb-3" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-600 mb-2">
+                    データがありません
+                  </h3>
+                  <p className="text-slate-500">
+                    現在表示できる紅葉スポット情報がありません。
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {allSpots.map((spot) => (
+                    <FoliageCard
+                      key={spot.id}
+                      spot={spot}
+                      className="h-full"
+                      onClick={handleSpotClick}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </section>
         )}
