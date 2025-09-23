@@ -55,16 +55,33 @@ interface StrapiImage {
   url: string;
   previewUrl?: string | null;
   provider: string;
-  provider_metadata?: any;
+  provider_metadata?: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
 }
 
 /**
+ * Strapi foliage spot raw data interface
+ */
+interface StrapiSpotData {
+  documentId?: string;
+  id?: number;
+  name: string;
+  nameEn?: string;
+  description?: string;
+  foliageStatus?: FoliageStatus;
+  image?: StrapiImage;
+  latitude?: number;
+  longitude?: number;
+  updatedAt?: string;
+  featured?: boolean;
+}
+
+/**
  * Transform Strapi foliage spot data to our FoliageSpot type
  */
-function transformFoliageSpot(strapiSpot: any): FoliageSpot {
+function transformFoliageSpot(strapiSpot: StrapiSpotData): FoliageSpot {
   if (!strapiSpot) {
     throw new Error(
       "Invalid foliage spot data: strapiSpot is null or undefined"
@@ -147,7 +164,7 @@ export async function fetchFoliageSpots(): Promise<FoliageSpot[]> {
       );
     }
 
-    const result: StrapiResponse<any[]> = await response.json();
+    const result: StrapiResponse<StrapiSpotData[]> = await response.json();
 
     if (!result.data || !Array.isArray(result.data)) {
       throw new Error(
@@ -188,7 +205,7 @@ export async function fetchFoliageSpot(
       );
     }
 
-    const result: { data: any } = await response.json();
+    const result: { data: StrapiSpotData } = await response.json();
 
     if (!result.data) {
       throw new Error("Invalid API response: no data field");
@@ -222,7 +239,7 @@ export async function fetchFeaturedFoliageSpots(): Promise<FoliageSpot[]> {
       );
     }
 
-    const result: StrapiResponse<any[]> = await response.json();
+    const result: StrapiResponse<StrapiSpotData[]> = await response.json();
 
     if (!result.data || !Array.isArray(result.data)) {
       throw new Error(
@@ -260,7 +277,7 @@ export async function fetchFoliageSpotsByStatus(
       );
     }
 
-    const result: StrapiResponse<any[]> = await response.json();
+    const result: StrapiResponse<StrapiSpotData[]> = await response.json();
 
     if (!result.data || !Array.isArray(result.data)) {
       throw new Error(
