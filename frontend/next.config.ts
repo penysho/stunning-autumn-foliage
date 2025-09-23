@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
         // pathname: "/photo-*",
       },
       {
+        protocol: "https",
+        hostname: "stunning-autumn-foliage-tst-api.pesh-igpjt.com",
+        port: "",
+      },
+      {
         protocol: "http",
         hostname: "localhost",
         port: "1337",
