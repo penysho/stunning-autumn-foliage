@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "stunning-autumn-foliage-tst-api.pesh-igpjt.com",
+        hostname: (process.env.NEXT_PUBLIC_STRAPI_URL || "").split("://")[1],
         port: "",
       },
       {
