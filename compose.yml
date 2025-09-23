@@ -1,4 +1,36 @@
 services:
+  # https://docs.strapi.io/cms/installation/docker#optional-docker-compose
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    container_name: stunning-autumn-foliage_backend
+    restart: unless-stopped
+    env_file: ./backend/.env
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: backend-db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: postgres
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      APP_KEYS: ${APP_KEYS}
+      NODE_ENV: ${NODE_ENV}
+    volumes:
+      - ./backend/config:/opt/app/config
+      - ./backend/src:/opt/app/src
+      - ./backend/package.json:/opt/package.json
+      - ./backend/package-lock.json:/opt/package-lock.json
+      - ./backend/.env:/opt/app/.env
+      - ./backend/public/uploads:/opt/app/public/uploads
+      - ./backend/scripts:/opt/app/scripts
+    ports:
+      - "1337:1337"
+    depends_on:
+      - backend-db
+
   backend-db:
     image: postgres:17.0-bookworm
     container_name: stunning-autumn-foliage_backend-db
